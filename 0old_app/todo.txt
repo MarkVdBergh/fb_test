@@ -1,0 +1,69 @@
+General
+- implement unittests: fi: test with a blacklisted id and see if the program doen't break. Testing changes to the code
+  can show fast if there is a bug. (see also @coverage on http://mg.pov.lt/profilehooks/)
+- when to use underscore?
+
+
+Scraper
+- implement a lock on the pageid. Different processes can run without scraping the same page.
+- rewrite. The class/function is not ideal. Better make a post class with a mongo page json and functions to feed it.
+- implement cron jobs to automate scraping
+- is profile always the samme as from? Why this doesn't work? db.getCollection('facebook').find({'profile.id':{'$ne':'from.id'}},{'profile.id':1,'from.id':1})
+- formulate a strategy to capture updates of posts without the need to redownload everything again. (ex. when someone comments on a past post).
+- improve restart method.
+  teller is obsolete.
+  when internet connection crash, best is to have an exponentialy increasing waiting time. With a blacklist crash, the best is 0 waiting time, and no teller.
+-
+
+Datatbase
+- rewite to have only functions, without class.
+- Schema design:
+    http://stackoverflow.com/questions/4662530/how-should-i-implement-this-schema-in-mongodb/4684647#4684647
+    https://blog.serverdensity.com/mongodb-schema-design-pitfalls/
+    https://www.mongodb.com/blog/post/schema-design-for-time-series-data-in-mongodb
+- reactions: make lowercase
+
+
+Statistics
+- change the facebook_query funcions into a facebook class with @classmethods???
+- check blaze:http://blaze.readthedocs.io/en/latest/install.html  and   toolz: http://toolz.readthedocs.io/en/latest/api.html
+
+
+NLP
+- method:
+    - Agregate text data
+    - Split text in sentences, sentences in words.
+    - ????
+    - Extract names from text (Name recognition dutch http://stackoverflow.com/questions/11293149/nltk-named-entity-recognition-in-dutch)
+    -
+
+- libraries comparisson: https://elitedatascience.com/python-nlp-libraries
+- topic modelling: see http://radimrehurek.com/topic_modeling_tutorial/2%20-%20Topic%20Modeling.html
+- Kaggle nlp course: http://p.migdal.pl/2017/01/06/king-man-woman-queen-why.html
+- http://www.datasciencecentral.com/profiles/blogs/10-common-nlp-terms-explained-for-the-text-analysis-novice?utm_content=buffer6df47&utm_medium=social&utm_source=facebook.com&utm_campaign=buffer
+- https://ayearofai.com/lenny-2-autoencoders-and-word-embeddings-oh-my-576403b0113a#.99q0q6tox
+- Word2Vec: http://textminingonline.com/training-word2vec-model-on-english-wikipedia-by-gensim
+- Dutch: Frog + https://github.com/proycon/python-frog
+
+
+
+
+Presentation:
+- charting:
+    - https://github.com/mher/chartkick.py
+- website:
+    - http://django-mongodb-engine.readthedocs.io/en/latest/index.html
+
+
+Future
+- scrape Twitter:
+    https://github.com/bear/python-twitter
+    http://knightlab.northwestern.edu/2014/03/15/a-beginners-guide-to-collecting-twitter-data-and-a-bit-of-web-scraping/
+- 24/7 monitoring only reactions and comments to see evolution of posts in time
+
+
+Monetarisation
+- allert system: warn a user when competitor publish an fb/twitter post of 'interest'
+-
+
+

@@ -1,0 +1,81 @@
+
+==============================================================================
+
+==============================================================================
+Chain of responsibility
+This pattern gives us a way to treat a request using different methods, each one addressing a specific part of the request. You know, one of the best principles for good code is the Single Responsibility principle.
+
+Every piece of code must do one, and only one, thing.
+
+This principle is deeply integrated in this design pattern.
+
+For example, if we want to filter some content we can implement different filters, each one doing one precise and clearly defined type of filtering. These filters could be used to filter offensive words, ads, unsuitable video content, and so on.
+
+class ContentFilter(object):
+    def __init__(self, filters=None):
+        self._filters = list()
+        if filters is not None:
+            self._filters += filters
+
+    def filter(self, content):
+        for filter in self._filters:
+            content = filter(content)
+        return content
+
+filter = ContentFilter([
+                offensive_filter,
+                ads_filter,
+                porno_video_filter])
+filtered_content = filter.filter(content)
+
+==============================================================================
+
+==============================================================================
+Facade
+
+This may very well be the most famous Python design pattern.
+
+Imagine you have a system with a considerable number of objects. Every object is offering a rich set of API methods. You can do a lot of things with this system, but how about simplifying the interface? Why not add an interface object exposing a well thought-out subset of all API methods? A Facade!
+
+Facade is an elegant Python design pattern. It's a perfect way of streamlining the interface.
+
+Facade is an elegant Python design pattern. It's a perfect way of streamlining the interface.
+
+Python Facade design pattern example:
+
+class Car(object):
+
+    def __init__(self):
+        self._tyres = [Tyre('front_left'),
+                             Tyre('front_right'),
+                             Tyre('rear_left'),
+                             Tyre('rear_right'), ]
+        self._tank = Tank(70)
+
+    def tyres_pressure(self):
+        return [tyre.pressure for tyre in self._tyres]
+
+    def fuel_level(self):
+        return self._tank.level
+There is no surprise, no tricks, the Car class is a Facade, and that’s all.
+
+==============================================================================
+
+==============================================================================
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
