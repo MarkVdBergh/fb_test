@@ -2,6 +2,7 @@ import collections
 import pprint
 
 from mongoengine import *
+from profilehooks import timecall, profile
 
 connect('politics')
 
@@ -28,9 +29,8 @@ class FbRawPost_comments(DynamicEmbeddedDocument):
     created_time = IntField()
     comment_from = EmbeddedDocumentField(db_field='from', document_type=FbRawPost_user)
     like_count = IntField()
-    comment_count=IntField()
+    comment_count = IntField()
     pass
-
 
 
 class FbRawPosts(DynamicDocument):
@@ -40,15 +40,21 @@ class FbRawPosts(DynamicDocument):
         FbRawPosts implements following methods:
         *   flatten_post():
 
+    :cvar pageid The facebook pahe id
+
     """
     meta = {'collection': 'facebook'}
     # Rename '_id' and 'id'
     id = ObjectIdField(db_field=('_id'), required=True)
-    pageid = StringField(db_field='id')
+    postid = StringField(db_field='id')
     created_time = IntField()
     profile = EmbeddedDocumentField(document_type=FbRawPost_profile)
     reactions = EmbeddedDocumentListField(document_type=FbRawPost_reactions)
     comments = EmbeddedDocumentListField(document_type=FbRawPost_comments)
+    shares = DictField()
+    message=StringField()
+    created_time_dt=DateTimeField()
+    created_time_local=DateTimeField()
     pass
 
     def set(self):
@@ -64,7 +70,16 @@ class FbRawPosts(DynamicDocument):
                 items.append((new_key, v))
         return dict(items)
 
-x=FbRawPosts
-for i in x.objects:
-    for j in i.comments:
-        print(j.message)
+
+# @profile()
+@timecall()
+def test():
+    x = FbRawPosts
+    for i in x.objects(shares__count__gte=10000):
+        print '='*100
+        print 'http://facebook.com/{}'.format(i.postid)
+        print('{}:   postid: {}, shares: {}'.format(i.profile.name, i.postid, i.shares['count']))
+        print i.created_time_local, i.created_time_dt
+        print i.message
+        print '='*100
+test()

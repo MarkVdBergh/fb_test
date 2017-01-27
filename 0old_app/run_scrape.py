@@ -78,7 +78,7 @@ pageids_news = [
 ]
 pageids_test = ['983442595060481']
 resume = False
-ENG = engine.Engine(since=(2017, 1, 11))
+ENG = engine.Engine(since=(2015, 11, 14), until=(2015, 11, 15))
 
 list_nr = int(raw_input('Enter (1:politics, 2:news, id): '))
 if list_nr == 0:
