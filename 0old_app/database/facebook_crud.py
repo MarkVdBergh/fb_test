@@ -5,8 +5,8 @@ import pandas as pd
 
 from mongo_singleton import Mongo
 
-db = Mongo.get_database()
-collection = db['facebook']
+# db = Mongo.get_database()
+# collection = db['facebook']
 
 #########################################
 # !!!!!!!!!! DELETE !!!!!!!!!!!!!!!!!!!
