@@ -1,3 +1,7 @@
 
 
 
+Applications:
+- Predict winner French ellections:
+    - Candidates: http://www.metronieuws.nl/nieuws/buitenland/2017/01/de-belangrijkste-kandidaten-presidentschap-frankrijk
+                  http://deredactie.be/cm/vrtnieuws/buitenland/1.2879023

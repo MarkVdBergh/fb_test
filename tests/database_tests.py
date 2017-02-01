@@ -8,6 +8,7 @@ from tools.development_tools import object_info
 from app.database.facebook_objects import FbRawPosts
 
 
+# ToDo: Test for min/max fields (timestamp)
 class Test_FbRawPosts(object):
     """ Base class for testing FbRawPost class"""
 

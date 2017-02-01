@@ -2,52 +2,62 @@ import json
 
 import pprint
 from mongoengine import *
+from mongoengine.base import EmbeddedDocumentList
 from profilehooks import timecall
 
-connect('politics')
+from app.settings import TESTING
+
+connect(db='test')
 
 
 class FbRawPost_profile(EmbeddedDocument):
+    id = StringField(required=True)
     name = StringField()
-    id = StringField(required=True, unique=True)
 
-    def __unicode__(self):
-        return self.to_json()
+    # def __unicode__(self):
+    #     return self.to_json()
 
 
 class FbRawPost_user(EmbeddedDocument):
+    id = StringField(required=False)
     name = StringField()
-    id = StringField(required=True, unique=True)
+    link = StringField()
+    picture = DictField(data={'url': StringField(),
+                              'is_silhouette': BooleanField()})
+    pic = StringField()
 
-    def __unicode__(self):
-        return self.to_json()
+    # def __unicode__(self):
+    #     return self.to_json()
 
 
 class FbRawPost_reactions(EmbeddedDocument):
-    type = StringField()
     id = StringField()
+    type = StringField()
     name = StringField()
     pic = URLField()
 
-    def __unicode__(self):
-        return self.to_json()
+    # def __unicode__(self):
+    #     return self.to_json()
 
 
 class FbRawPost_comments(DynamicEmbeddedDocument):
     id = StringField()
     created_time = IntField()
     comment_from = EmbeddedDocumentField(db_field='from', document_type=FbRawPost_user)
+    message = StringField()
+    likes = DictField(data=EmbeddedDocumentListField(document_type=FbRawPost_user))
+    # likes = {'data':EmbeddedDocumentListField(document_type=FbRawPost_user)}
     like_count = IntField()
     comment_count = IntField()
 
-    def __unicode__(self):
-        return self.to_json()
+    # def __unicode__(self):
+    #     return self.to_json()
 
 
 class FbRawPosts(DynamicDocument):
-    # ToDo: Extend the class with additional fields, like picture, name, message, ...
-    # ToDo: the field 'created_time_dt' is called 'created_time_local' in some documents !
-
+    # Tweak: Extend the class with additional fields, like picture, name, message, ...
+    # ToDo: Rename class variables
+    # ToDo: Add indexes
     """
         Maps facebook Graph Api documents in a FbRawPosts object.
         FbRawPost retrieves documents from Mongo or accepts a list of documents (directly from facebook scraper)
@@ -57,20 +67,32 @@ class FbRawPosts(DynamicDocument):
     :cvar pageid The facebook pahe id
 
     """
-    meta = {'collection': 'facebook_tests'}
-    # Rename '_id' and 'id'
+
+    meta = {'collection': 'facebook'}
+    # def __new__(cls, collection='facebookx'):
+    #     cls.meta = {'collection': collection}
+    #     super(FbRawPosts,cls)
+
     id = ObjectIdField(db_field=('_id'), required=True, primary_key=True)
+    created_time = IntField(min_value=1041379200, max_value=2524608000)
     postid = StringField(db_field='id')
-    # created_time = IntField()
     profile = EmbeddedDocumentField(document_type=FbRawPost_profile)
     reactions = EmbeddedDocumentListField(document_type=FbRawPost_reactions)
-    comments = EmbeddedDocumentListField(document_type=FbRawPost_comments)
-    shares = DictField()
-    message = StringField()
-    created_time_dt = DateTimeField()
-    created_time_local = DateTimeField()
 
-    def __str__(self):
+    comments = EmbeddedDocumentListField(document_type=FbRawPost_comments)
+
+    shares = DictField()
+    from_user = EmbeddedDocumentField(document_type=FbRawPost_user, default=FbRawPost_user())
+    to_user = EmbeddedDocumentField(document_type=FbRawPost_user, default=FbRawPost_user())
+    message = StringField()
+    picture = StringField()
+    name = StringField()
+    link = StringField()
+    type = StringField()
+    status_type = StringField()
+    story = StringField()
+
+    def __unicode__(self):
         return self.to_json()
 
 
@@ -95,10 +117,11 @@ def test():
     # j=json.dumps({'id':9999,'profile':{'id':100,'name':'MMMM'}})
     # y=x.from_json(j)
     # print y.to_json()
-    pass
-
-    y = x.objects(shares__count__gte=10000).to_json()
-    print(y)
+    # x.set_collection('facebook_test')
+    # y = x.objects(shares__count__gte=10000)
+    print type(x)
+    y = x.objects.count()
+    pprint.pprint(y)
 
 
 if __name__ == '__main__':
