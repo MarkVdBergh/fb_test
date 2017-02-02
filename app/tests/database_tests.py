@@ -1,14 +1,9 @@
 from __future__ import absolute_import
 
-import pprint
 import unittest
 
-from mongoengine import connect
-
-from app.database.facebook_objects_factory import FbPost_Factory
-from tools.development_tools import object_info
-
 from app.database.facebook_objects import FbPost
+from app.database.facebook_objects_factory import FbPost_Factory
 
 
 # ToDo: Test for min/max fields (timestamp)
@@ -56,3 +51,4 @@ class Test_FbRawPosts_DictList(unittest.TestCase, Test_FbRawPosts):
 
 if __name__ == '__main__':
     unittest.main()
+    pass
