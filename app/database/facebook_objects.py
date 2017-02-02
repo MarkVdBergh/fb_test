@@ -1,89 +1,79 @@
-import json
-
 import pprint
-from mongoengine import *
-from mongoengine.base import EmbeddedDocumentList
+# from mongoengine import *
+from mongoengine import connect, EmbeddedDocument, StringField, DictField, BooleanField, URLField, DynamicEmbeddedDocument, IntField, EmbeddedDocumentField, \
+    EmbeddedDocumentListField, DynamicDocument, ObjectIdField, register_connection
 from profilehooks import timecall
 
+# Register MongoDb databases
 from app.settings import TESTING
 
-connect(db='test')
+register_connection(alias='test', name='test')
+register_connection(alias='default', name='xxx')
 
 
-class FbRawPost_profile(EmbeddedDocument):
+# ToDo: connect() seems unecessary. It uses the default db automatically
+# connect(db='test')
+# connect('xxx')
+
+
+class Profile(EmbeddedDocument):
     id = StringField(required=True)
     name = StringField()
 
-    # def __unicode__(self):
-    #     return self.to_json()
 
-
-class FbRawPost_user(EmbeddedDocument):
+class User(EmbeddedDocument):
     id = StringField(required=False)
     name = StringField()
     link = StringField()
     picture = DictField(data={'url': StringField(),
                               'is_silhouette': BooleanField()})
-    pic = StringField()
-
-    # def __unicode__(self):
-    #     return self.to_json()
 
 
-class FbRawPost_reactions(EmbeddedDocument):
+class Reactions(EmbeddedDocument):
     id = StringField()
     type = StringField()
     name = StringField()
     pic = URLField()
 
-    # def __unicode__(self):
-    #     return self.to_json()
 
-
-class FbRawPost_comments(DynamicEmbeddedDocument):
+# ToDo: Why Dynamic?
+class Comments(DynamicEmbeddedDocument):
     id = StringField()
     created_time = IntField()
-    comment_from = EmbeddedDocumentField(db_field='from', document_type=FbRawPost_user)
+    comment_from = EmbeddedDocumentField(db_field='from', document_type=User)
     message = StringField()
-    likes = DictField(data=EmbeddedDocumentListField(document_type=FbRawPost_user))
-    # likes = {'data':EmbeddedDocumentListField(document_type=FbRawPost_user)}
+    likes = DictField(data=EmbeddedDocumentListField(document_type=User))
     like_count = IntField()
     comment_count = IntField()
 
-    # def __unicode__(self):
-    #     return self.to_json()
 
-
-class FbRawPosts(DynamicDocument):
+class FbPost(DynamicDocument):
     # Tweak: Extend the class with additional fields, like picture, name, message, ...
     # ToDo: Rename class variables
     # ToDo: Add indexes
     """
-        Maps facebook Graph Api documents in a FbRawPosts object.
+        Maps facebook Graph Api documents in a FbPost object.
         FbRawPost retrieves documents from Mongo or accepts a list of documents (directly from facebook scraper)
-        FbRawPosts implements following methods:
+        FbPost implements following methods:
         *   flatten_post():
 
     :cvar pageid The facebook pahe id
 
     """
-
-    meta = {'collection': 'facebook'}
-    # def __new__(cls, collection='facebookx'):
-    #     cls.meta = {'collection': collection}
-    #     super(FbRawPosts,cls)
+    # meta={}
+    meta = {'collection': 'facebook'}  # Otherwise documents will be saved in the 'fb_post' collection. (Default collection is classname in smallcaps
+    if TESTING:  # Swith to the test database, otherwise use default one.
+        meta['db_alias'] = 'test'
 
     id = ObjectIdField(db_field=('_id'), required=True, primary_key=True)
     created_time = IntField(min_value=1041379200, max_value=2524608000)
     postid = StringField(db_field='id')
-    profile = EmbeddedDocumentField(document_type=FbRawPost_profile)
-    reactions = EmbeddedDocumentListField(document_type=FbRawPost_reactions)
-
-    comments = EmbeddedDocumentListField(document_type=FbRawPost_comments)
-
+    profile = EmbeddedDocumentField(document_type=Profile)
+    reactions = EmbeddedDocumentListField(document_type=Reactions)
+    comments = EmbeddedDocumentListField(document_type=Comments)
     shares = DictField()
-    from_user = EmbeddedDocumentField(document_type=FbRawPost_user, default=FbRawPost_user())
-    to_user = EmbeddedDocumentField(document_type=FbRawPost_user, default=FbRawPost_user())
+    from_user = EmbeddedDocumentField(document_type=User, default=User())
+    to_user = EmbeddedDocumentField(document_type=User, default=User())
     message = StringField()
     picture = StringField()
     name = StringField()
@@ -99,7 +89,7 @@ class FbRawPosts(DynamicDocument):
 # @profile()
 @timecall()
 def test():
-    x = FbRawPosts
+    x = FbPost
     # for i in x.objects(shares__count__gte=13000):
     # This doesn't work ! see: https://docs.mongodb.com/manual/reference/operator/query/size/#_S_size. "create a counter field that you increment when you add elements to a field."
 
