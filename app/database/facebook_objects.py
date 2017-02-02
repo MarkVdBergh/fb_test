@@ -109,7 +109,7 @@ def test():
     # print y.to_json()
     # x.set_collection('facebook_test')
     # y = x.objects(shares__count__gte=10000)
-    print type(x)
+    print (type(x))
     y = x.objects.count()
     pprint.pprint(y)
 
